@@ -1,0 +1,38 @@
+---
+- hosts: all
+  become: true
+  vars:
+    ssh_key: '~/.ssh/id_rsa.pub'
+  tasks:
+      # Create a new superuser
+      - name: Create superuser
+        command: adduser greg1
+      
+      # Add ssh public key
+      - name: copy ssh key
+        authorized_key:
+          key: "{{ lookup('file', ssh_key) }}"
+          user: scoop
+      
+      # Disable password login and root login
+      - name: Enabling ssh-key only root access
+        lineinfile:
+          dest: /etc/ssh/sshd_config
+          regexp: '^PermitRootLogin'
+          line: 'PermitRootLogin without-password'
+      
+      # Setup firewall
+      
+     # - name: Update apt-cache 
+     #   apt: update_cache=yes
+     # 
+     # - name: Install Nginx, iptables, fail2ban
+     #   apt: name={{ item }} state=latest
+     #   with_items:
+     #       - nginx
+     #       - iptables
+     #       - fail2ban
+     
+     # Setup nginx webserver with new html
+     
+     # Password protect

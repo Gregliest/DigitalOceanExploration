@@ -1,9 +1,27 @@
 ---
 - hosts: all
   become: true
-  vars:
-    ssh_key: '~/.ssh/id_rsa.pub'
   tasks:
+      - name: Make sure we have a 'wheel' group
+        group:
+          name: wheel
+          state: present
+
+      - name: Allow 'wheel' group to have passwordless sudo
+        lineinfile:
+          dest: /etc/sudoers
+          state: present
+          regexp: '^%wheel'
+          line: '%wheel ALL=(ALL) NOPASSWD: ALL'
+          validate: 'visudo -cf %s'
+
+      - name: Add sudoers users to wheel group
+        user: name=scoopadmin groups=wheel append=yes state=present createhome=yes
+
+      - name: Set up authorized keys for the user
+        authorized_key: user=scoopadmin key="{{item}}"
+        with_file:
+          - ~/.ssh/id_rsa.pub
       # # Create a new superuser
       # - name: Create superuser
       #   command: adduser greg1
@@ -20,7 +38,6 @@
           dest: /etc/ssh/sshd_config
           regexp: '^PermitRootLogin'
           line: 'PermitRootLogin without-password'
-      
     
       - name: Update apt-cache 
         apt: update_cache=yes

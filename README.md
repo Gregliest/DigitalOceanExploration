@@ -22,6 +22,7 @@ Create your droplet using the Digital Ocean [website](www.digitalocean.com) with
 - Installs and starts Nginx and Fail2ban
 - Sets up a firewall that only allows OpenSSH (port 22) and Nginx HTTP (port 80)
 - Changes the html for the webpage
+- Password protects the webpage with user -> scott:scoop
 
 ## Notes
 - This playbook can only be run once, since it connect via root login ssh, and subsequently disables root login. Ideally, this playbook would be split in two, one to create the user and lock down root, and the other to make the rest of the changes. 

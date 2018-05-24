@@ -2,7 +2,7 @@
 - hosts: all
   become: true
   tasks:
-      - name: Make sure we have a 'wheel' group
+      - name: Make a 'wheel' group
         group:
           name: wheel
           state: present
@@ -15,7 +15,7 @@
           line: '%wheel ALL=(ALL) NOPASSWD: ALL'
           validate: 'visudo -cf %s'
 
-      - name: Add sudoers users to wheel group
+      - name: Add new user, scoopadmin, to wheel group
         user: name=scoopadmin groups=wheel shell=/bin/bash append=yes state=present createhome=yes
 
       - name: Set up authorized keys for the user
@@ -23,8 +23,7 @@
         with_file:
           - ~/.ssh/id_rsa.pub
       
-      # Disable password login and root login
-      - name: Enabling ssh-key only root access
+      - name: Disable root access
         lineinfile:
           dest: /etc/ssh/sshd_config
           regexp: '^PermitRootLogin'
@@ -44,7 +43,6 @@
           - nginx
           - fail2ban
           
-      # Setup firewall
       - name: Setup firewall
         ufw:
           rule: allow
@@ -59,7 +57,6 @@
         ufw: 
           state: enabled
      
-     # Setup nginx webserver with new html
       - name: Set html
         copy:
            src: index.html

@@ -25,3 +25,4 @@ Create your droplet using the Digital Ocean [website](www.digitalocean.com) with
 
 ## Notes
 - This playbook can only be run once, since it connect via root login ssh, and subsequently disables root login. Ideally, this playbook would be split in two, one to create the user and lock down root, and the other to make the rest of the changes. 
+- An ssh key pair is included in the repo, _for demonstration purposes only_. Please don't use it for anything serious. 

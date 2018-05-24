@@ -16,28 +16,19 @@
           validate: 'visudo -cf %s'
 
       - name: Add sudoers users to wheel group
-        user: name=scoopadmin groups=wheel append=yes state=present createhome=yes
+        user: name=scoopadmin groups=wheel shell=/bin/bash append=yes state=present createhome=yes
 
       - name: Set up authorized keys for the user
         authorized_key: user=scoopadmin key="{{item}}"
         with_file:
           - ~/.ssh/id_rsa.pub
-      # # Create a new superuser
-      # - name: Create superuser
-      #   command: adduser greg1
-      # 
-      # # Add ssh public key
-      # - name: copy ssh key
-      #   authorized_key:
-      #     key: "{{ lookup('file', ssh_key) }}"
-      #     user: scoop
       
       # Disable password login and root login
       - name: Enabling ssh-key only root access
         lineinfile:
           dest: /etc/ssh/sshd_config
           regexp: '^PermitRootLogin'
-          line: 'PermitRootLogin without-password'
+          line: 'PermitRootLogin no'
     
       - name: Update apt-cache 
         apt: update_cache=yes

@@ -21,7 +21,22 @@
           regexp: '^PermitRootLogin'
           line: 'PermitRootLogin without-password'
       
+    
+      - name: Update apt-cache 
+        apt: update_cache=yes
+      
+      - name: Install Nginx, iptables, fail2ban
+        apt: name={{ item }} state=latest
+        with_items:
+          - nginx
+          - fail2ban
+          
       # Setup firewall
+      - name: Setup firewall
+        ufw:
+          rule: allow
+          name: Nginx HTTP
+          
       - name: Setup firewall
         ufw:
           rule: allow
@@ -30,17 +45,12 @@
       - name: Enable firewall
         ufw: 
           state: enabled
-        
-      - name: Update apt-cache 
-        apt: update_cache=yes
-      
-      - name: Install Nginx, iptables, fail2ban
-        apt: name={{ item }} state=latest
-        with_items:
-          - nginx
-          - iptables
-          - fail2ban
      
      # Setup nginx webserver with new html
-     
+      - name: Set html
+        copy:
+           src: index.html
+           dest: /var/www/html/index.nginx-debian.html
+           mode: u+rw
+          
      # Password protect

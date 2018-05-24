@@ -37,18 +37,19 @@
       - name: Update apt-cache 
         apt: update_cache=yes
       
-      - name: Install Nginx, fail2ban
+      - name: Install Nginx, fail2ban, passlib
         apt: name={{ item }} state=latest
         with_items:
           - nginx
           - fail2ban
+          - python3-passlib
           
-      - name: Setup firewall
+      - name: Setup firewall for Nginx
         ufw:
           rule: allow
           name: Nginx HTTP
           
-      - name: Setup firewall
+      - name: Setup firewall for OpenSSH
         ufw:
           rule: allow
           name: OpenSSH
@@ -59,8 +60,34 @@
      
       - name: Set html
         copy:
-           src: index.html
-           dest: /var/www/html/index.nginx-debian.html
-           mode: u+rw
+          src: index.html
+          dest: /var/www/html/index.nginx-debian.html
+          mode: u+rw
           
-     # Password protect
+      - name: Add password file
+        htpasswd:
+          path: /etc/nginx/.htpasswd
+          name: scott
+          password: 'scoop'
+          owner: scoopadmin
+          group: scoopadmin
+          mode: 0644
+          
+      - name: Configure nginx to use password file
+        lineinfile:
+          dest: /etc/nginx/sites-enabled/default
+          insertafter: 'server {'
+          firstmatch: yes
+          line: '        auth_basic_user_file /etc/nginx/.htpasswd;'
+          
+      - name: Configure nginx to use auth
+        lineinfile:
+          dest: /etc/nginx/sites-enabled/default
+          insertafter: 'server {'
+          firstmatch: yes
+          line: '        auth_basic "Restricted Content";'
+        
+      - name: Restart nginx
+        service:
+          name: 'nginx'
+          state: 'restarted'

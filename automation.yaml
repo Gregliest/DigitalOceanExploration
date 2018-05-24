@@ -29,11 +29,16 @@
           dest: /etc/ssh/sshd_config
           regexp: '^PermitRootLogin'
           line: 'PermitRootLogin no'
+          
+      - name: Restart sshd
+        service:
+          name: 'ssh'
+          state: 'restarted'
     
       - name: Update apt-cache 
         apt: update_cache=yes
       
-      - name: Install Nginx, iptables, fail2ban
+      - name: Install Nginx, fail2ban
         apt: name={{ item }} state=latest
         with_items:
           - nginx

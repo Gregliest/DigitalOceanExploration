@@ -1,4 +1,4 @@
 [hosts]
 204.48.19.26 ansible_ssh_user=root ansible_python_interpreter=/usr/bin/python3
-
+206.81.12.203 ansible_ssh_user=root ansible_python_interpreter=/usr/bin/python3
 
